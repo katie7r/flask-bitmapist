@@ -39,15 +39,116 @@ def get_event_data(event_name, time_group='days', now=None, system='default'):
     return _events_fn(time_group)(event_name, now, system)
 
 
-def _events_fn(time_group='days'):
-    if time_group == 'days' or time_group == 'day':
-        return _day_events_fn
-    elif time_group == 'weeks' or time_group == 'week':
-        return _week_events_fn
-    elif time_group == 'months' or time_group == 'month':
-        return _month_events_fn
-    elif time_group == 'years' or time_group == 'year':
-        return _year_events_fn
+class Cohort():
+    """
+    A class for handling and simplifying cohort creation and retrieval.
+
+    :param str base_event_name: Name of main event to act as base event for cohort
+    :param str next_event_name: Name of next event to build cohort on base event
+    :param list chaining_events: List of events which will be chained to furhter
+                                 filter cohort; each is a dict of 'name' and 'op'
+                                 with the name of the event and the operator
+                                 to use (i.e., 'and' or 'or'), repectively
+    :param str time_group: Time scale by which to group results; valid values are
+                           'days', 'weeks', 'months', and 'years' (TODO: 'hours')
+    :param datetime now: Time point at which to get events (current time if `None`)
+    :param str system: Which Bitmapist should be used
+    """
+
+    def __init__(self, base_event_name, next_event_name, chaining_events=[],
+                 time_group='days', now=None, system='default'):
+        # cohort events
+        self.base_event_name = base_event_name
+        self.next_event_name = next_event_name
+        self.chaining_events = chaining_events
+
+        # cohort settings
+        self.time_group = time_group
+        self.get_events = _events_fn(self.time_group)
+        self._now = now or datetime.utcnow()
+        self._sys = system
+
+        # self.data  # list of lists of counts of ids (standard)
+        # self._raw  # list of lists of full sets of ids, not counts  # ?
+
+        # self.dates  # list of datetimes for defining cohort
+
+        # self.base_total  # total users for base event in cohort
+        # self.row_totals  # list of total users (per row of results in cohort)
+        # self.col_totals  # list of total users (per col of results in cohort)
+
+        # self.averages    # list of averages (# users or percent per column)
+
+
+    def generate(self, m=10, n=10, as_percent=False, with_replacement=False):
+        """
+        Generate the cohort with the provided options.
+
+        :param int m: Number of rows of results (or, how many steps back from current time)
+        :param int n: Number of cols of results (or, how many steps forward for each row/time)
+        :param bool as_percent: Whether to return cohort data as percents (vs standard user counts)
+        :param bool with_replacement: Whether more than one occurence of an event for a single user
+                                      should be counted; e.g., if a user logged in multiple times,
+                                      whether to include subsequent logins in the cohort events
+
+        :returns: List of lists of ints (user counts) making up the cohort results
+        """
+        pass
+
+    def get_dates(self):
+        """
+        Gets the event time points (based on ``time_group`` and ``now``) for defining the cohort.
+
+        :returns: List of datetimes
+        """
+        pass
+
+    def get_totals(self, cohort):
+        """
+        Calculate the base, row, and column totals for the cohort.
+
+        :returns: Tuple of (int) total users for base event in cohort,
+                           (list, length m) total users per row of results,
+                           (list, length n) total users per col of results
+        """
+        pass
+
+    def get_averages(self, cohort):
+        """
+        Calculate the average for each column of the cohort, either based on the
+        user count or on the percent, if ``as_percent``.
+
+        :returns: List of ints (with user counts) or floats (with percents) for column averages
+        """
+        pass
+
+    def get_as_percent(self, cohort):
+        """
+        Converts cohort data to use percent values rather than user counts.
+
+        :returns: List of lists of floats (percents) making up the cohort results
+        """
+        pass
+
+    def _chain(self, anchor_event_name, events_to_chain):
+        """
+        Chain a set of events with an anchoring set of events.
+
+        Note: ``OR`` operators will apply only to their direct predecessors (i.e.,
+        ``A && B && C || D`` will be handled as ``A && B && (C || D)``, and
+        ``A && B || C && D`` will be handled as ``A && (B || C) && D``).
+
+        :param str anchor_event_name: Name of event to chain additional events to/with
+        :param list events_to_chain: List of events which will be chained to/with the
+                                     anchor event; each is a dict of 'name' and 'op'
+                                     with the name of the event and the operator
+                                     to use (i.e., 'and' or 'or'), repectively
+
+        :returns: Bitmapist events collection
+        """
+        pass
+
+
 
 
 def get_cohort(primary_event_name, secondary_event_name,
@@ -204,6 +305,17 @@ def chain_events(base_event_name, events_to_chain, now, time_group,
                 base_event = BitOpAnd(base_event, chain_events[idx])
 
     return base_event
+
+
+def _events_fn(time_group='days'):
+    if 'day' in time_group:
+        return _day_events_fn
+    elif 'week' in time_group:
+        return _week_events_fn
+    elif 'month' in time_group:
+        return _month_events_fn
+    elif 'year' in time_group:
+        return _year_events_fn
 
 
 # PRIVATE methods: copied directly from Bitmapist because you can't import

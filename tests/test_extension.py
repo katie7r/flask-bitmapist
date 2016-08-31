@@ -68,6 +68,8 @@ def setup_chain_events(time_group='days'):
     return setup_users(), addons
 
 
+# TODO: test_get_cohort_contents - counts, percents, totals, empties, etc.
+
 @mock.patch('flask_bitmapist.utils.BitOpAnd')
 @mock.patch('flask_bitmapist.utils.BitOpOr')
 @mock.patch('flask_bitmapist.utils.BitOpXor')

@@ -223,9 +223,12 @@ API
 .. .. automodule:: flask_bitmapist.utils
 ..  :members:
 
+.. autoclass:: flask_bitmapist.utils.Cohort
+  :members:
+
 .. autofunction:: flask_bitmapist.utils.get_event_data
-.. autofunction:: flask_bitmapist.utils.get_cohort
-.. autofunction:: flask_bitmapist.utils.chain_events
+.. .. autofunction:: flask_bitmapist.utils.get_cohort
+.. .. autofunction:: flask_bitmapist.utils.chain_events
 
 
 Indices and tables

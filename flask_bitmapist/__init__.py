@@ -9,7 +9,7 @@
 
 from core import FlaskBitmapist
 from decorators import mark
-from utils import chain_events, get_cohort, get_event_data
+from utils import Cohort, get_event_data, chain_events, get_cohort
 
 try:
     import flask_login
@@ -28,4 +28,4 @@ __versionfull__ = __version__
 __all__ = ['FlaskBitmapist', 'mark', 'mark_event', 'unmark_event',
            'MonthEvents', 'WeekEvents', 'DayEvents', 'HourEvents',
            'BitOpAnd', 'BitOpOr', 'get_event_names',
-           'chain_events', 'get_cohort', 'get_event_data']
+           'Cohort', 'get_event_data', 'chain_events', 'get_cohort']
