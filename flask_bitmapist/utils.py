@@ -79,7 +79,6 @@ class Cohort():
 
         # self.averages    # list of averages (# users or percent per column)
 
-
     def generate(self, m=10, n=10, as_percent=False, with_replacement=False):
         """
         Generate the cohort with the provided options.
@@ -147,8 +146,6 @@ class Cohort():
         :returns: Bitmapist events collection
         """
         pass
-
-
 
 
 def get_cohort(primary_event_name, secondary_event_name,
