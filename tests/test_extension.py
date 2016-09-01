@@ -7,7 +7,7 @@ from random import randint
 from flask import request
 from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user
 
-from flask_bitmapist import (chain_events, get_cohort, get_event_data,
+from flask_bitmapist import (Cohort, get_event_data, chain_events, get_cohort,
                              mark, mark_event, unmark_event,
                              MonthEvents, WeekEvents, DayEvents, HourEvents)
 from flask_bitmapist.extensions.flask_login import mark_login, mark_logout
@@ -166,6 +166,13 @@ def test_get_cohort_contents():
     cr, dr, tr = get_cohort(event1, event2, time_group='days', num_rows=4, num_cols=4,
                             with_replacement=True)
 
+    # print '------- c0 -------'
+    # print c0
+    # print expected_c0
+    # print '------- cr -------'
+    # print cr
+    # print expected_cr
+
     # assert that returned values match expected values
     assert c0 == expected_c0
     # assert cp == expected_cp
@@ -237,6 +244,26 @@ def test_get_cohort_structure(mock_week_events, mock_month_events,
 
     def _year(x):
         return (x.year)
+
+    # 1 - weeks
+    for idx, d in enumerate(d1):
+        assert _week(d) == _week(now - timedelta(weeks=3-idx))
+    # 2 - months
+    for idx, d in enumerate(d2):
+        this_month = now.replace(day=1)  # work with first day of month
+        months_ago = (5 - idx) * 365 / 12  # no 'months' arg for timedelta
+        assert _month(d) == _month(this_month - timedelta(months_ago))
+    # 3 - years
+    for idx, d in enumerate(d3):
+        this_year = now.replace(month=1, day=1)  # work with first day of year
+        years_ago = (1 - idx) * 365  # no 'years' arg for timedelta
+        assert _year(d) == _year(this_year - timedelta(years_ago))
+
+    # ------- COHORT CLASS - DATES ---------------------------------------------
+    d1 = Cohort('A', 'B', time_group='weeks').calculate_dates(4)
+    d2 = Cohort('A', 'B', time_group='months').calculate_dates(6)
+    d3 = Cohort('A', 'B', time_group='years').calculate_dates(2)
+    # --------------------------------------------------------------------------
 
     # 1 - weeks
     for idx, d in enumerate(d1):
